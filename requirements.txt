@@ -2,4 +2,3 @@ streamlit
 pandas
 pyzbar
 pillow
-plotly
