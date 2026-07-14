@@ -1,4 +1,4 @@
 streamlit
 pandas
-pyzbar
+zxing-cpp
 pillow
