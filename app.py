@@ -1,6 +1,6 @@
 import streamlit as st
 from PIL import Image
-from pyzbar.pyzbar import decode
+import zxingcpp
 
 from database import (
     add_scan,
@@ -47,7 +47,7 @@ st.sidebar.info(
     QR & Barcode Scanner built using
     ✅ Streamlit
     ✅ SQLite
-    ✅ pyzbar
+    ✅ zxing-cpp
     """
 )
 
@@ -55,11 +55,12 @@ st.sidebar.info(
 def decode_image(image: Image.Image):
     """Decode all QR codes / barcodes found in a PIL image."""
     results = []
-    for r in decode(image):
-        content = r.data.decode("utf-8", errors="replace")
-        symbology = r.type  # e.g. QRCODE, EAN13, CODE128, UPCA...
-        category = "QR Code" if symbology == "QRCODE" else "Barcode"
-        results.append({"content": content, "category": category, "format": symbology})
+    for r in zxingcpp.read_barcodes(image):
+        if not r.text:
+            continue
+        fmt = str(r.format)  # e.g. 'QRCode', 'EAN-13', 'Code128'
+        category = "QR Code" if "QR" in fmt else "Barcode"
+        results.append({"content": r.text, "category": category, "format": fmt})
     return results
 
 
